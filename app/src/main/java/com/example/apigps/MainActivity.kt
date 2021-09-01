@@ -3,10 +3,14 @@ package com.example.apigps
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.media.audiofx.BassBoost
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.gps.databinding.ActivityMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -41,13 +45,27 @@ class MainActivity : AppCompatActivity() {
         if(checkPermissions()){
             if(isLocationEnable()){
                 mFusedLocationClient.lastLocation.addOnSuccessListener(this){
-                    binding.tvLatitude.text = it?.latitude.toString()
-                    binding.tvLongitude.text = it?.longitude.toString()
+
+                    if(it!=null){
+                        binding.tvLatitude.text = it.latitude.toString()
+                        binding.tvLongitude.text = it.longitude.toString()
+                    }else {
+                        Toast.makeText(this,"No se ha detectado ninguna localización",Toast.LENGTH_SHORT).show()
+                    }
+
                 }
+            }else {
+                turnLocation()
             }
         }else{
             requestPermissions()
         }
+    }
+
+    private fun turnLocation(){
+        Toast.makeText(this, "Debes prender el GPS", Toast.LENGTH_SHORT).show()
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        startActivity(intent)
     }
 
     //pedir permisos
